@@ -25,7 +25,6 @@ public class OrderController {
         System.out.println("========================"+"启动");
        User user= orderService.testOrder(id);
         logger.info("user:{}"+user);
-        System.out.println("===============user:{}"+user);
         return  user;
     }
 
@@ -34,7 +33,7 @@ public class OrderController {
     public String testOrder(){
         System.out.println("============================"+"启动");
 
-        return  "低低地";
+        return  "============================"+"启动";
     }
 
 
