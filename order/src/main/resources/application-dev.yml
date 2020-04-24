@@ -1,0 +1,18 @@
+server:
+  port: 8764
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://www.tianlongfightclub.com:3306/bqx?useUnicode=true&characterEncoding=utf-8&useSSL=true
+    username: admin
+    password: 123456
+
+logging:
+  config: classpath:logging-backconfig.xml
+  level:
+    com.bqx.order.mapper: info
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
