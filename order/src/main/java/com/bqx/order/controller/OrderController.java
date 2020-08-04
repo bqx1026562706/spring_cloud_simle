@@ -28,7 +28,7 @@ public class OrderController {
         return  user;
     }
 
-    @RequestMapping("/testOrder")
+    @RequestMapping("testOrder")
     @ResponseBody
     public String testOrder(){
         System.out.println("============444444444================"+"启动更改git默认账号2");
