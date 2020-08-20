@@ -1,6 +1,7 @@
 package com.bqx.community.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -13,6 +14,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.impl.client.HttpClients;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -179,5 +182,42 @@ public class HttpClientUtil {
         String postJson = HttpClientUtil.postJson(url , params );
         System.out.println(postJson);
     }
+
+    /**
+     * 通用请求格式转换
+     * @param httpServletRequest
+     * @return
+     */
+    public static Map<String, String> commonHttpRequestParamConvert(HttpServletRequest httpServletRequest) {
+        Map<String, String> params = new HashMap<>();
+        try {
+            Map<String, String[]> requestParams = httpServletRequest.getParameterMap();
+            if (requestParams != null && !requestParams.isEmpty()) {
+                requestParams.forEach((key, value) -> params.put(key, value[0]));
+            } else {
+                StringBuilder paramSb = new StringBuilder();
+                try {
+                    String str = "";
+                    BufferedReader br = httpServletRequest.getReader();
+                    while((str = br.readLine()) != null){
+                        paramSb.append(str);
+                    }
+                } catch (Exception e) {
+                    System.out.println("httpServletRequest get requestbody error, cause : " + e);
+                }
+                if (paramSb.length() > 0) {
+                    JSONObject paramJsonObject = JSON.parseObject(paramSb.toString());
+                    if (paramJsonObject != null && !paramJsonObject.isEmpty()) {
+                        paramJsonObject.forEach((key, value) -> params.put(key, String.valueOf(value)));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("commonHttpRequestParamConvert error, cause : " + e);
+        }
+        return params;
+    }
+
+
 
 }

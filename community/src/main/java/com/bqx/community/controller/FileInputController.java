@@ -41,7 +41,12 @@ public class FileInputController {
     @Autowired
    private UserService userService;
 
-
+    /**
+     * 同步读取
+     * @param excel
+     * @return
+     * @throws IOException
+     */
     @RequestMapping(value = "readExcel", method = RequestMethod.POST)
     public String readExcel(@RequestParam("file") MultipartFile excel) throws IOException {
 
@@ -83,8 +88,27 @@ public class FileInputController {
         }
         str.append("};");
         System.out.println(str);
-        return "";
+        return "读取成功";
     }
+
+    /**
+     * 异步读取excle
+     * @param
+     * @throws IOException
+     */
+    @RequestMapping(value = "/readAsynchronousExcel",method =RequestMethod.POST)
+    public String readAsynchronousExcel(@RequestParam("file") MultipartFile excel) throws IOException {
+        InputStream inputStream = excel.getInputStream();
+        Sheet sheet = new Sheet(1,1,ExcleImportInfo.class);
+        EasyExcelFactory.readBySax(inputStream,sheet,new ExcelListener());
+        //这里能读出来，是因为在ExcelListener 中 初始化的时候，存放进去
+        List<ExcleImportInfo> readAsynchronousExcelList = ExcelListener.getReadAsynchronousExcelList();
+        ServiceResponse serverResponse =  userService.insertUserExcle(readAsynchronousExcelList);
+
+        return "异步读取成功";
+    }
+
+
 
 
     @RequestMapping(value = "writeExcel", method = RequestMethod.GET)

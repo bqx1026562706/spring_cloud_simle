@@ -3,6 +3,8 @@ package com.bqx.community.pojo;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
 
+import java.util.Date;
+
 public class ExcleImportInfo extends BaseRowModel {
 
     @ExcelProperty(index = 0)
@@ -16,6 +18,18 @@ public class ExcleImportInfo extends BaseRowModel {
 
     @ExcelProperty(index = 3)
     private String phone;
+
+    //创建时间
+    private Date createTime;
+
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public String getPhone() {
         return phone;

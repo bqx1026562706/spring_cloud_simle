@@ -2,12 +2,16 @@ package com.bqx.community.utils.excel;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.bqx.community.pojo.ExcleImportInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ExcelListener extends AnalysisEventListener {
+/**
+ * 异步的话，需要继承的时候写泛型，同步不需要写
+ */
+public class ExcelListener extends AnalysisEventListener<ExcleImportInfo> {
 
     /**
      * 每隔5条存储数据库，实际使用中可以3000条，然后清理list ，方便内存回收
@@ -15,8 +19,10 @@ public class ExcelListener extends AnalysisEventListener {
     private static final int BATCH_COUNT = 5;
 
 
-    //失败信息集合
+    //
     private static List<Map<String, String>> mapList = new ArrayList<>();
+
+    private static List<ExcleImportInfo > readAsynchronousExcelList = new ArrayList<ExcleImportInfo >();
 
     //成功条数
     private static Integer curess = 0;
@@ -27,43 +33,32 @@ public class ExcelListener extends AnalysisEventListener {
 
     //自定义用于暂时存储data。
     //可以通过实例获取该值
-    private List<Object> datas = new ArrayList<Object>();
-
-    //后台导入用来存储解析好的数据
-   // private static List<ExcelBackImport> excelBackList = new ArrayList<>();
+    private List<ExcleImportInfo> datas = new ArrayList<ExcleImportInfo>();
+    //标识  用于执行某些方法
     private boolean black;
 
 
-
-
     @Override
-    public void invoke(Object o, AnalysisContext analysisContext) {
+    public void invoke(ExcleImportInfo o, AnalysisContext analysisContext) {
         //数据存储到list，供批量处理，或后续自己业务逻辑处理。
         datas.add(o);
         System.out.println("解析到一条数据:{ "+ o.toString() +" }");
 
         curess ++;
+        //根据业务做处理，可以写
         if (datas.size() >= BATCH_COUNT) {
-            doSomething( curess );
+            doSomething( datas );
             datas.clear();
         }
-        //根据自己业务做处理
-       /* if (black) {
-            blackDoSomething(o, analysisContext.getCurrentRowNum());
-        } else {
-            doSomething(o, analysisContext.getCurrentRowNum());
-        }*/
     }
     //这里是初始化的时候 ，做一些事情，比如更新 excle 中的数据到es ，solr 等等
-    private void doSomething(Integer curess){
+    private void doSomething(List<ExcleImportInfo> excleImportInfos){
         System.out.println("{ "+ curess +" }条数据，开始存储数据库！" + datas.size());
-
+        //给List 赋值 ,方便异步或者同步读取
+        readAsynchronousExcelList.addAll(excleImportInfos);
         System.out.println("存储数据库成功！");
 
     }
-
-    private  void  blackDoSomething(Object object, Integer d){}
-
 
 
     @Override
@@ -107,13 +102,26 @@ public class ExcelListener extends AnalysisEventListener {
         this.error = error;
     }
 
-    public List<Object> getDatas() {
+    public static int getBatchCount() {
+        return BATCH_COUNT;
+    }
+
+    public static List<ExcleImportInfo> getReadAsynchronousExcelList() {
+        return readAsynchronousExcelList;
+    }
+
+    public static void setReadAsynchronousExcelList(List<ExcleImportInfo> readAsynchronousExcelList) {
+        ExcelListener.readAsynchronousExcelList = readAsynchronousExcelList;
+    }
+
+    public List<ExcleImportInfo> getDatas() {
         return datas;
     }
 
-    public void setDatas(List<Object> datas) {
+    public void setDatas(List<ExcleImportInfo> datas) {
         this.datas = datas;
     }
+
 
     public boolean isBlack() {
         return black;
@@ -122,4 +130,7 @@ public class ExcelListener extends AnalysisEventListener {
     public void setBlack(boolean black) {
         this.black = black;
     }
+
+
+
 }
