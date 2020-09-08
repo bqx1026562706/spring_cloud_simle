@@ -1,6 +1,7 @@
 package com.bqx.community.service.impl;
 
 import com.bqx.community.mapper.UserMapper;
+import com.bqx.community.pojo.ExcleImportCityRequest;
 import com.bqx.community.pojo.ExcleImportInfo;
 import com.bqx.community.pojo.vo.ServiceResponse;
 import com.bqx.community.service.UserService;
@@ -61,5 +62,11 @@ public class UserServiceImpl implements UserService {
            userMapper.insertUserExcle(list);
 
         return  ServiceResponse.ok();
+    }
+
+    @Override
+    public ServerResponse impltreadCityExcel(List<ExcleImportCityRequest> list) {
+        userMapper.impltreadCityExcel(list);
+        return null;
     }
 }

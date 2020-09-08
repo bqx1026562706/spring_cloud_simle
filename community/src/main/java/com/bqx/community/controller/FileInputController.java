@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.bqx.community.pojo.ExcleImportCityRequest;
 import com.bqx.community.pojo.ExcleImportInfo;
 import com.bqx.community.pojo.MultiLineHeadExcelModel;
 import com.bqx.community.pojo.vo.ServiceResponse;
@@ -19,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.function.ServerResponse;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +42,77 @@ public class FileInputController {
 
     @Autowired
    private UserService userService;
+
+    @RequestMapping(value = "readCityExcel", method = RequestMethod.POST)
+    public String readCityExcel(@RequestParam("file") MultipartFile excel) throws IOException {
+        InputStream inputStream = excel.getInputStream();
+
+
+     try{
+        //读取第一页 跳过第一条 文字头
+        Sheet sheet = new Sheet(1, 1, ExcleImportCityRequest.class);
+        List<Object> read = EasyExcelFactory.read(inputStream, sheet);
+        List<ExcleImportCityRequest> list = new ArrayList<ExcleImportCityRequest>();
+        for (Object obj : read) {
+            list.add((ExcleImportCityRequest) obj);
+        }
+         System.out.println("总体 长度："+list.size());
+        //开始下标
+        int startIndex = 0;
+        //每次入库的条数
+        int size = 100;
+        boolean end = false;
+         List<ExcleImportCityRequest> importlist;
+         while (true){
+            if (startIndex + size >= list.size()) {
+                importlist = list.subList(startIndex, list.size());
+                end = true;
+            } else {
+                importlist = list.subList(startIndex, startIndex + size);
+                startIndex = startIndex + size;
+            }
+             System.out.println("入库时的list 长度："+importlist.size());
+             ServerResponse serverResponse = userService.impltreadCityExcel(importlist);
+            if (end) { break; }
+        }
+
+
+            // 取出数据
+            StringBuilder str = new StringBuilder();
+            str.append("{");
+            String link = "";
+            for (int i = 0; i < 100; i++) {
+                Integer id = list.get(i).getId();
+                String name2 = list.get(i).getName();
+                str.append(link).append("\"" + id+ "\":").append("\"" + name2 + "\"");
+                link = ",";
+            }
+            str.append("};");
+            System.out.println(str);
+
+    }catch (Exception e){
+
+    }finally {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+        return "读取成功";
+    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 同步读取
@@ -109,8 +182,11 @@ public class FileInputController {
     }
 
 
-
-
+    /**
+     * 下载
+     * @param response
+     * @throws IOException
+     */
     @RequestMapping(value = "writeExcel", method = RequestMethod.GET)
     public void writeExcel(HttpServletResponse response) throws IOException {
         ServletOutputStream out = null;

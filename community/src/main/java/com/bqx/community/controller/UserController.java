@@ -6,19 +6,23 @@ import com.bqx.community.utils.FileUtil;
 import com.sun.java.browser.plugin2.liveconnect.v1.Result;
 import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +45,111 @@ public class UserController {
         return  "";
     }
 
+    public List<Map<String, Object>> getAllPartitionChild2(int companyId) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("companyId",companyId);
+        //查询出全部的数据
+       // List<Map<String, Object>> mapAllPartition = dao.getNamedParamterDao().queryForList(ResumeSql.SELECT_ALL_PARTITION, parameterSource);
+        List<Map<String, Object>> mapAllPartition = new ArrayList<>();
+        //所有父级为0
+        List<Map> provinceMapList = new ArrayList<>();
+        // pid + 下一级的全部 list 只包含当前的下属
+        Map<Integer,List<Map<String,Object>>>  pidObjectMap =new HashMap<>();
+
+        for (Map<String, Object> province:mapAllPartition ) {
+            Integer parentId = (Integer) province.get("parentId");
+            if(0==parentId){
+                provinceMapList.add(province);
+            }
+            List<Map<String, Object>> childList =new ArrayList<>();
+            if(CollectionUtils.isEmpty(childList)){
+                childList = new ArrayList<>();
+            }
+            childList.add(province);
+            pidObjectMap.put((Integer) province.get("parentId"),childList);
+        }
+        //返回数据
+        List<Map<String, Object>> result =new ArrayList<>();
+        for (Map provinceMap: provinceMapList) {
+            Map<String, Object> value =  PartitionChild(provinceMap,pidObjectMap);
+            result.add(value);
+        }
+
+        return result;
+    }
+
+
+
+    //递归
+    private Map<String, Object> PartitionChild(Map provinceMap, Map<Integer, List<Map<String,Object>>> pidObjectMap){
+        List<Map<String,Object>> childMapList =  pidObjectMap.get( (Integer) provinceMap.get("parentId") );
+        if(CollectionUtils.isEmpty(childMapList)){
+            return provinceMap;
+        }else {
+            for (Map<String,Object> childM:childMapList){
+                Map<String, Object> value =PartitionChild(provinceMap,pidObjectMap);
+                List<Map<String,Object>> dxList =null;
+
+                if(CollectionUtils.isEmpty(provinceMap)){
+                    dxList=new ArrayList<>();
+                }else {
+                    dxList= childMapList;
+                }
+                dxList.add(value);
+                provinceMap.put("child",dxList);
+
+            }
+        }
+
+        return  provinceMap;
+    }
+
+
+
+    public static void main(String[] args) throws java.text.ParseException {
+        /*System.out.println("输入天数：");
+        Scanner scan = new Scanner(System.in);
+        int day = scan.nextInt();
+        String createDate = "2000-01-01";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+        try {
+            Date date = sdf.parse(createDate);
+            Calendar cl = Calendar.getInstance();
+            cl.setTime(date);
+            // cl.set(Calendar.DATE, day);
+            cl.add(Calendar.DATE, day);
+            String temp = "";
+            temp = sdf.format(cl.getTime());
+            System.out.println(temp);
+        } catch (ParseException e) {
+
+            e.printStackTrace();
+        }*/
+
+
+        //UserController.nowDateMove(-1);
+
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(2);
+        list.add(5);
+        list.add(4);
+        list.add(1);
+        System.out.println(list.stream().map(String::valueOf).collect(Collectors.joining(",")));
+
+    }
+
+    /**
+     * 转化天数
+     * @param num
+     */
+    public static void nowDateMove(int num) {
+        //获取当前日期
+        LocalDate ld = LocalDate.now();
+        //要移动的天数num，可以是整数或者负数但是后退推荐使用minusDays
+        LocalDate ll = ld.plusDays(num);
+        System.out.println("今天是： " + ld + "------再过" + num + "天是：" + ll);
+    }
 
     /**
      * 替换字符
