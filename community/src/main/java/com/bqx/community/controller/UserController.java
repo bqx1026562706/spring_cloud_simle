@@ -1,5 +1,6 @@
 package com.bqx.community.controller;
 
+import com.bqx.community.pojo.ResumeHistoryClean;
 import com.bqx.community.pojo.User;
 import com.bqx.community.service.UserService;
 import com.bqx.community.utils.FileUtil;
@@ -39,11 +40,44 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+    /**
+     * rpo访问 测试
+     * @param
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/getRpoCityList")
+    public  List<Map> getRpoCityList()  {
+      List<Map> city =    userService.getRpoCityList();
+        return  city;
+    }
+
+
+
+
+
     @RequestMapping("getImageFromHttp")
     public  String getImageFromHttp(String urlStr) throws IOException {
         userService.getImageFromHttp(urlStr);
         return  "";
     }
+
+
+    @RequestMapping("resumeHistoryClean")
+    public  String resumeHistoryClean(String urlStr)  {
+        ResumeHistoryClean p=  userService.resumeHistoryClean(urlStr);
+        return  "";
+    }
+
+
+
+
+
+
+
+
+
 
     public List<Map<String, Object>> getAllPartitionChild2(int companyId) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();

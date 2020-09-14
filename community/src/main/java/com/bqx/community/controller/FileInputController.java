@@ -72,7 +72,7 @@ public class FileInputController {
                 startIndex = startIndex + size;
             }
              System.out.println("入库时的list 长度："+importlist.size());
-             ServerResponse serverResponse = userService.impltreadCityExcel(importlist);
+        //     ServerResponse serverResponse = userService.impltreadCityExcel(importlist);
             if (end) { break; }
         }
 
@@ -149,7 +149,7 @@ public class FileInputController {
         for (Object obj : read) {
             list.add((ExcleImportInfo) obj);
         }
-        ServiceResponse serverResponse =  userService.insertUserExcle(list);
+      //  ServiceResponse serverResponse =  userService.insertUserExcle(list);
 
         // 取出数据
         StringBuilder str = new StringBuilder();
@@ -176,7 +176,7 @@ public class FileInputController {
         EasyExcelFactory.readBySax(inputStream,sheet,new ExcelListener());
         //这里能读出来，是因为在ExcelListener 中 初始化的时候，存放进去
         List<ExcleImportInfo> readAsynchronousExcelList = ExcelListener.getReadAsynchronousExcelList();
-        ServiceResponse serverResponse =  userService.insertUserExcle(readAsynchronousExcelList);
+       // ServiceResponse serverResponse =  userService.insertUserExcle(readAsynchronousExcelList);
 
         return "异步读取成功";
     }

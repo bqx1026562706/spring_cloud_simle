@@ -3,7 +3,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://www.tianlongfightclub.com:3306/bqx?useUnicode=true&characterEncoding=utf-8&useSSL=true
+    url: jdbc:mysql://www.tianlongfightclub.com:3306/rpo?useUnicode=true&characterEncoding=utf-8&useSSL=true
     username: admin
     password: 123456
   application:

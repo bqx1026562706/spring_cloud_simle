@@ -3,6 +3,7 @@ package com.bqx.community.service.impl;
 import com.bqx.community.mapper.UserMapper;
 import com.bqx.community.pojo.ExcleImportCityRequest;
 import com.bqx.community.pojo.ExcleImportInfo;
+import com.bqx.community.pojo.ResumeHistoryClean;
 import com.bqx.community.pojo.vo.ServiceResponse;
 import com.bqx.community.service.UserService;
 import com.bqx.community.utils.FileUtils;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -57,7 +59,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
+   /* @Override
     public ServiceResponse insertUserExcle(List<ExcleImportInfo> list) {
            userMapper.insertUserExcle(list);
 
@@ -68,5 +70,21 @@ public class UserServiceImpl implements UserService {
     public ServerResponse impltreadCityExcel(List<ExcleImportCityRequest> list) {
         userMapper.impltreadCityExcel(list);
         return null;
+    }*/
+
+    @Override
+    public ResumeHistoryClean resumeHistoryClean(String urlStr) {
+
+
+
+
+        return null;
+    }
+
+    @Override
+    public List<Map> getRpoCityList() {
+        List<Map> m=   userMapper.getRpoCityList();
+
+        return m;
     }
 }

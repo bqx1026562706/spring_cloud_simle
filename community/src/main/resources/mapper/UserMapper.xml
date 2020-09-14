@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bqx.community.mapper.UserMapper">
 
-   <insert id="insertUserExcle">
+  <!-- <insert id="insertUserExcle">
       insert into t_user_info (name,age,email,phone,create_time) values
       <foreach collection="list" index="index" item="item" separator=",">
          ( #{item.name},#{item.age},#{item.email},#{item.phone} ,NOW())
@@ -14,7 +14,11 @@
       <foreach collection="list" index="index" item="item" separator=",">
          ( #{item.id},#{item.name} ,NOW())
       </foreach>
-   </insert>
+   </insert>-->
+
+   <select id="getRpoCityList" resultType="map">
+        select  * from city
+   </select>
 
 
 </mapper>
