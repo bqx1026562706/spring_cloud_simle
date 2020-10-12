@@ -1,8 +1,5 @@
 package com.bqx.community.mapper;
 
-import com.bqx.community.pojo.ExcleImportCityRequest;
-import com.bqx.community.pojo.ExcleImportInfo;
-import com.bqx.community.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
